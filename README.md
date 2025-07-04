@@ -11,7 +11,7 @@
 
 
 
-
+```
 travel-community/
 ├── frontend/          # Next.js 프론트엔드
 │   ├── src/
@@ -27,3 +27,4 @@ travel-community/
 │   │   └── middleware/
 │   └── package.json
 └── shared/            # 공통 타입 정의
+```
