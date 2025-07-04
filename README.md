@@ -27,23 +27,27 @@ src/
 
 ## 기술 스택
 
-### 프론트엔드
-- **Next.js 14** - 페이지 라우팅
-- **React** - UI 라이브러리
-- **TypeScript** - 타입 안전성
-- **Tailwind CSS** - 스타일링
-- **Zustand** - 상태 관리
-- **React Query** - 서버 상태 관리
+**프론트엔드**
+* **Next.js 15.3.5** - 페이지 라우팅
+* **React 19** - UI 라이브러리
+* **TypeScript 5** - 타입 안전성
+* **Tailwind CSS 4** - 스타일링
+* **Zustand 5** - 전역 상태 관리
+* **React Hook Form + Zod** - 폼 관리 & 검증
+* **Axios** - HTTP 클라이언트
+* **Lucide React** - 아이콘 라이브러리
+* **Swiper** - 이미지 슬라이더
+* **Next Cloudinary** - 이미지 최적화
 
-### 백엔드
-- **Node.js** - 런타임
-- **Express** - 웹 프레임워크
-- **TypeScript** - 타입 안전성
-- **Prisma** - ORM
-- **PostgreSQL** - 데이터베이스
-- **JWT** - 인증
+**백엔드**
+* **Node.js** - 런타임
+* **Express** - 웹 프레임워크
+* **TypeScript** - 타입 안전성
+* **Prisma** - ORM
+* **PostgreSQL** - 데이터베이스
+* **JWT** - 인증
 
-## 통신 방식
-- **REST API** - HTTP 요청/응답
-- **포트**: 프론트(3000), 백(8000)
-- **CORS** 설정으로 서로 통신 가능!
+**통신 방식**
+* **REST API** - HTTP 요청/응답
+* **포트**: 프론트(3000), 백(8000)
+* **CORS** 설정으로 서로 통신 가능
