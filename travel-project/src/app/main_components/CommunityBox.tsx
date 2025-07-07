@@ -1,4 +1,4 @@
-export default function MainBox() {
+export default function CommunityBox() {
   return (
     <div className="flex flex-col gap-8 items-center sm:items-start mb-16">
       <h1 className="text-3xl font-bold mb-4">Welcome to the Travel Project</h1>
