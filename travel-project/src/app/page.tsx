@@ -15,7 +15,7 @@ export default function Home() {
       </div>
       
       {/* 메인 콘텐츠 영역 */}
-      <main className="flex-1 flex flex-col items-center items-stre px-20 sm:px-20">
+      <main className="flex-1 flex flex-col items-center px-20 sm:px-20">
         {/* TopBox */}
         <div className="flex flex-row h-128 px-40 mb-16 gap-8 items-stretch w-full">
           <div className="w-3/4 lg:flex-1">
@@ -27,7 +27,9 @@ export default function Home() {
         </div>
         
         {/* 기존 Next.js 컨텐츠 */}
+        <div className="flex flex-col items-center justify-cente w-full max-w-none h-full px-40 mb-16 rounded-lg">
           <CommunityBox />
+        </div>
       </main>
       
       {/* 푸터 */}
