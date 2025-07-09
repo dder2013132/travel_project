@@ -1,54 +1,28 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import FlightSearchForm from "@/components/apitest/FlightSearchForm";
+import FlightResults from "@/components/apitest/FlightResults";
+import { useState } from "react";
 
-export default function Page() {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export type FlightSearchParams = {
+  departure: string;
+  destination: string;
+  departureDate: string;
+  returnDate: string;
+  seatClass: string;
+  passengers: number;
+};
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch('/api/apitest'); // 프록시 경유
-        if (!res.ok) throw new Error('API 호출 실패');
-        const json = await res.json();
-        setData(json);
-      } catch (err: any) {
-        console.error('클라이언트 에러:', err.message);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading) return <p>로딩 중...</p>;
-  if (error) return <p>에러 발생: {error}</p>;
+export default function FlightSearchPage() {
+  const [searchParams, setSearchParams] = useState<FlightSearchParams | null>(null);
 
   return (
-    <div>
-      <h1>API Test Page</h1>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
+    <div className="container mx-auto p-4">
+      <h1 className="text-3xl font-bold text-center mb-8">✈️ 왕복 항공권 검색</h1>
+      <FlightSearchForm onSearch={setSearchParams} />
+      {searchParams && (
+        <FlightResults searchParams={searchParams} />
+      )}
     </div>
   );
 }
-
-// "use client";
-
-// import dynamic from "next/dynamic";
-
-// const WorldMap = dynamic(() => import("./worldmap"), {
-//   ssr: false,
-// });
-
-// export default function Page() {
-//   return (
-//     <div style={{ height: "100vh", width: "100%" }}>
-//       <h1 style={{ textAlign: "center" }}>🌍 공항 지도</h1>
-//       <WorldMap />
-//     </div>
-//   );
-// }

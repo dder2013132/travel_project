@@ -1,6 +1,8 @@
 "use client";
 
-import { FlightSearchParams } from "@/app/flights/page";
+import { FlightSearchParams } from "@/app/apitest/page";
+import React from "react";
+import axios from "axios";
 
 type Props = {
   searchParams: FlightSearchParams;
@@ -8,20 +10,27 @@ type Props = {
 
 const FlightResults = ({ searchParams }: Props) => {
   // ✨ 임시 Mock 데이터 (실제 API 연결 시 교체)
-  const flights = [
-    {
-      airline: "대한항공",
-      flightNumber: "KE123",
-      departureTime: "2025-08-01 09:30",
-      arrivalTime: "2025-08-01 12:00",
-    },
-    {
-      airline: "아시아나항공",
-      flightNumber: "OZ456",
-      departureTime: "2025-08-01 14:00",
-      arrivalTime: "2025-08-01 16:30",
-    },
-  ];
+  // const flights = [
+  //   {
+  //     airline: "대한항공",
+  //     flightNumber: "KE123",
+  //     departureTime: "2025-08-01 09:30",
+  //     arrivalTime: "2025-08-01 12:00",
+  //   },
+  //   {
+  //     airline: "아시아나항공",
+  //     flightNumber: "OZ456",
+  //     departureTime: "2025-08-01 14:00",
+  //     arrivalTime: "2025-08-01 16:30",
+  //   },
+  // ];
+  // 실제 API 호출로 대체
+  const [flights, setFlights] = React.useState([]);
+
+  const fetchFlights = async () => {
+    try {
+      const response = await axios.get(`/api/apitest`)
+
 
   return (
     <div className="mt-8">

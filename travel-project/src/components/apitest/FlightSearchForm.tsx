@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FlightSearchParams } from "@/app/flights/page";
+import { FlightSearchParams } from "@/app/apitest/page";
 
 type Props = {
   onSearch: (params: FlightSearchParams) => void;
