@@ -59,7 +59,7 @@ export default function Home() {
     // 구글맵 API 스크립트 동적 로드
     if (!(window as any).google) {
       const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBS-tTXerhP2aUMmPPiPYY50SUrE2vSQe8&callback=initMap`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=API_KEY&callback=initMap`;
       script.async = true;
       script.defer = true;
 
