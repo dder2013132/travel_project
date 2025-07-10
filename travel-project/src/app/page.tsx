@@ -5,6 +5,8 @@ import Footer from "./main_components/Footer";
 import "./globals.css";
 import { useEffect } from "react";
 
+
+
 // 타입스크립트를 위한 타입 선언
 declare global {
   interface Window {
@@ -14,6 +16,8 @@ declare global {
 }
 
 export default function Home() {
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  
   // 구글맵 초기화 함수
   useEffect(() => {
     const initMap = () => {
@@ -54,12 +58,13 @@ export default function Home() {
       // 디버깅용: 맵 로드 후 확인
       console.log("지도 로드됨:", map);
       console.log("Map ID:", "1e5e92fd23e5482c80edd660");
+      console.log("API Key:", apiKey);
     };
 
     // 구글맵 API 스크립트 동적 로드
     if (!(window as any).google) {
       const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=API_KEY&callback=initMap`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
       script.async = true;
       script.defer = true;
 
@@ -70,38 +75,37 @@ export default function Home() {
     } else {
       initMap();
     }
-  }, []);
+  }, [apiKey]);
 
   return (
-    <div className="h-auto flex flex-col">
+    <div className="h-auto bg-my-color w-full flex flex-col">
       {/* 헤더 */}
       <div className="p-7 sm:p-7">
         <Header />
       </div>
 
       {/* 메인 콘텐츠 영역 */}
-      <main className="flex-1 flex flex-col items-center px-20 sm:px-20">
-        {/* 새로운 3컬럼 레이아웃: 메뉴(작게) + 항공권(적당) + 지도(개크게) */}
-        <div className="flex flex-col w-full max-w-none h-128 gap-8 mb-16">
+      <main className="flex-1 flex flex-col bg-my-color items-center px-20 sm:px-20 min-h-screen">
+  <div className="flex flex-col w-full max-w-none gap-8 mb-16 flex-1">
           {/* 항공권 - 적당 */}
-          <div className="w-1/3 bg-blue-50 rounded-lg p-6 flex flex-col">
-            <h2 className="text-xl font-bold mb-4">✈️ 항공권 검색</h2>
+          <div className="bg-ticket-color rounded-lg p-6 flex flex-col flex-shrink-0">
+            <h2 className="text-xl text-white font-bold mb-4">✈️ 항공권 검색</h2>
             <div className="space-y-4">
               <div className="flex gap-4">
                 <input
                   type="text"
                   placeholder="출발지"
-                  className="flex-1 p-2 border rounded"
+                  className="flex-1 p-2 border rounded bg-white"
                 />
                 <input
                   type="text"
                   placeholder="도착지"
-                  className="flex-1 p-2 border rounded"
+                  className="flex-1 p-2 border rounded bg-white"
                 />
               </div>
               <div className="flex gap-4">
-                <input type="date" className="flex-1 p-2 border rounded" />
-                <input type="date" className="flex-1 p-2 border rounded" />
+                <input type="date" className="flex-1 p-2 border rounded bg-white" />
+                <input type="date" className="flex-1 p-2 border rounded bg-white" />
               </div>
               <button className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600">
                 항공권 검색
@@ -110,11 +114,8 @@ export default function Home() {
           </div>
 
           {/* 지도 - 개크게 */}
-          <div className="flex-1 bg-gray-200 rounded-lg p-4">
-            <div
-              id="map"
-              className="w-full h-full bg-gray-300 rounded min-h-80"
-            >
+          <div className="flex-1 min-h-0">
+            <div id="map" className="min-h-[40vh] sm:min-h-[45vh] md:min-h-[50vh] lg:min-h-[60vh]">
               {/* 구글맵이 여기에 로드될 거야! */}
             </div>
           </div>

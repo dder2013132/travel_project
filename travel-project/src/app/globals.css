@@ -3,13 +3,19 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --my-color: #1e293b;
+  --ticket-color: #334155;
+  --header-color: #003366;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-my-color: var(--my-color);
+  --color-ticket-color: var(--ticket-color);
+  --color-header-color: var(--header-color);
+  --font-sans: var(--font-jalnan2ttf);
+  --font-mono: var(--font-jalnan2);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,7 +28,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-jalnan2ttf), Arial, Helvetica, sans-serif;
 }
 
 .swiper {
