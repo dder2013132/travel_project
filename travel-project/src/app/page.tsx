@@ -68,6 +68,8 @@ export default function Home() {
           streetViewControl: false,
           rotateControl: false,
           fullscreenControl: false,
+          scrollwheel: true,
+          gestureHandling: 'greedy',
           styles: [
             {
               featureType: "road",
