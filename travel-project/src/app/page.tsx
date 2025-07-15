@@ -2,6 +2,8 @@
 import Image from "next/image";
 import Header from "./main_components/Header";
 import Footer from "./main_components/Footer";
+import CusNav from "@/components/common/Navigation"
+import { TravelCard } from "@/components/travel/TravelCards"
 import "./globals.css";
 import { useEffect, useState } from "react";
 import { countryImages } from "./countryData";
@@ -138,9 +140,7 @@ export default function Home() {
   return (
     <div className="h-auto bg-my-color w-full flex flex-col">
       {/* 헤더 */}
-      <div className="p-7 sm:p-7">
-        <Header />
-      </div>
+        <CusNav />
 
       {/* 메인 콘텐츠 영역 */}
       <main className="flex-1 flex flex-col bg-my-color items-center px-20 sm:px-20 min-h-screen">
@@ -217,7 +217,23 @@ export default function Home() {
           </div>
         </div>
       </main>
-
+      {/* 여행지 카드 컴포넌트 */}
+      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">🌍 인기 여행지</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {Object.values(countryImages).map((destination, index) => {
+            // TravelDestination 타입으로 변환
+            const travelDestination = {
+              ...destination,
+              id: String(index), // id를 string으로 변환
+              location: destination.name, // 또는 적절한 위치 정보
+              rating: 4.5, // 임의의 평점, 필요에 따라 수정
+              category: "기타", // 임의의 카테고리, 필요에 따라 수정
+            };
+            return <TravelCard key={index} destination={travelDestination} />;
+          })}
+        </div>
+      </div>
       {/* 푸터 */}
       <Footer />
     </div>
