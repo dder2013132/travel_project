@@ -67,3 +67,53 @@ body {
   border-radius: 50%;
   background-color: rgba(255, 255, 255, 0.5);
 }
+
+.country-card {
+  animation: smoothFadeIn 0.2s ease-out;
+  transition: all 0.2s ease;
+}
+
+@keyframes smoothFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 🎯 맵 마커 호버 효과 */
+.gm-style div[title] {
+  transition: all 0.2s ease !important;
+}
+
+.gm-style div[title]:hover {
+  transform: scale(1.1) !important;
+  filter: brightness(1.2) !important;
+}
+
+/* 📱 반응형 카드 크기 */
+@media (max-width: 640px) {
+  .country-card {
+    max-width: 240px;
+    font-size: 0.9rem;
+  }
+}
+
+/* 🌟 부드러운 그림자 효과 */
+.country-card {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+}
+
+/* 🎭 이미지 호버 효과 */
+.country-card img {
+  transition: transform 0.3s ease;
+}
+
+.country-card:hover img {
+  transform: scale(1.05);
+}
