@@ -3,9 +3,16 @@ import Image from "next/image";
 import Header from "./main_components/Header";
 import Footer from "./main_components/Footer";
 import "./globals.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { countryImages } from "./countryData";
 
-
+// 타입 정의 추가
+interface CountryData {
+  name: string;
+  image: string;
+  position: { lat: number; lng: number };
+  description: string;
+}
 
 // 타입스크립트를 위한 타입 선언
 declare global {
@@ -18,47 +25,100 @@ declare global {
 export default function Home() {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   
+  // 새로운 상태들 추가! (타입 지정)
+  const [hoveredCountry, setHoveredCountry] = useState<CountryData | null>(null);
+  const [mousePosition, setMousePosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [map, setMap] = useState<any>(null);
+  
+  // 마우스 위치 트래킹 (타입 지정)
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+    
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+  
+  // 국가 이미지 보여주기 (타입 지정)
+  const showCountryImage = (countryData: CountryData) => {
+    setHoveredCountry(countryData);
+  };
+  
+  // 국가 이미지 숨기기
+  const hideCountryImage = () => {
+    setHoveredCountry(null);
+  };
+  
   // 구글맵 초기화 함수
   useEffect(() => {
     const initMap = () => {
-      // 방법 1: Map ID 사용 (현재 방식)
-      const map = new (window as any).google.maps.Map(
+      const mapInstance = new (window as any).google.maps.Map(
         document.getElementById("map"),
         {
-          zoom: 7,
-          center: { lat: 37.5665, lng: 126.978 },
+          zoom: 3,
+          center: { lat: 20, lng: 0 },
           mapId: "1e5e92fd23e5482c80edd660",
-
-          // 🔥 모든 UI 컨트롤 숨기기!
-          disableDefaultUI: true, // 기본 UI 전부 끄기
-
-          // 개별 설정 (더 세밀한 컨트롤 원하면)
-          zoomControl: false, // 줌 버튼 숨기기
-          mapTypeControl: false, // 지도/위성 버튼 숨기기
-          scaleControl: false, // 스케일 숨기기
-          streetViewControl: false, // 스트리트뷰 숨기기
-          rotateControl: false, // 회전 컨트롤 숨기기
-          fullscreenControl: false, // 전체화면 버튼 숨기기
-
+          disableDefaultUI: true,
+          zoomControl: false,
+          mapTypeControl: false,
+          scaleControl: false,
+          streetViewControl: false,
+          rotateControl: false,
+          fullscreenControl: false,
           styles: [
             {
               featureType: "road",
               elementType: "labels",
               stylers: [{ visibility: "off" }],
             },
+            {
+              featureType: "administrative",
+              elementType: "labels",
+              stylers: [{ visibility: "on" }],
+            },
           ],
-
-          // 상호작용도 제한하고 싶으면 (선택사항)
-          // gestureHandling: "none",  // 마우스/터치 조작 막기
-          // draggable: false,         // 드래그 막기
-          // scrollwheel: false,       // 휠 줌 막기
         }
       );
 
-      // 디버깅용: 맵 로드 후 확인
-      console.log("지도 로드됨:", map);
-      console.log("Map ID:", "1e5e92fd23e5482c80edd660");
-      console.log("API Key:", apiKey);
+      setMap(mapInstance);
+
+      // 각 국가에 마커 추가하기
+      Object.entries(countryImages).forEach(([code, country]: [string, CountryData]) => {
+        const marker = new (window as any).google.maps.Marker({
+          position: country.position,
+          map: mapInstance,
+          title: country.name,
+          icon: {
+            url: 'data:image/svg+xml;base64,' + btoa(`
+              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30">
+                <circle cx="15" cy="15" r="12" fill="rgba(59, 130, 246, 0.8)" stroke="white" stroke-width="3"/>
+                <circle cx="15" cy="15" r="6" fill="white"/>
+              </svg>
+            `),
+            scaledSize: new (window as any).google.maps.Size(30, 30)
+          }
+        });
+
+        // 호버 이벤트 리스너들
+        marker.addListener('mouseover', () => {
+          console.log(`${country.name} 호버됨!`); // 디버깅용
+          showCountryImage(country);
+        });
+
+        marker.addListener('mouseout', () => {
+          console.log(`${country.name} 호버 끝!`); // 디버깅용
+          hideCountryImage();
+        });
+        
+        // 클릭 이벤트
+        marker.addListener('click', () => {
+          alert(`${country.name} 여행 정보를 준비중입니다! ✈️`);
+        });
+      });
+
+      console.log("지도 로드됨:", mapInstance);
+      console.log("마커 개수:", Object.keys(countryImages).length);
     };
 
     // 구글맵 API 스크립트 동적 로드
@@ -68,9 +128,7 @@ export default function Home() {
       script.async = true;
       script.defer = true;
 
-      // 전역 함수로 등록
       (window as any).initMap = initMap;
-
       document.head.appendChild(script);
     } else {
       initMap();
@@ -86,7 +144,7 @@ export default function Home() {
 
       {/* 메인 콘텐츠 영역 */}
       <main className="flex-1 flex flex-col bg-my-color items-center px-20 sm:px-20 min-h-screen">
-  <div className="flex flex-col w-full max-w-none gap-8 mb-16 flex-1">
+        <div className="flex flex-col w-full max-w-none gap-8 mb-16 flex-1">
           {/* 항공권 - 적당 */}
           <div className="bg-ticket-color rounded-lg p-6 flex flex-col flex-shrink-0">
             <h2 className="text-xl text-white font-bold mb-4">✈️ 항공권 검색</h2>
@@ -114,10 +172,48 @@ export default function Home() {
           </div>
 
           {/* 지도 - 개크게 */}
-          <div className="flex-1 min-h-0">
-            <div id="map" className="min-h-[40vh] sm:min-h-[45vh] md:min-h-[50vh] lg:min-h-[60vh]">
-              {/* 구글맵이 여기에 로드될 거야! */}
+          <div className="flex-1 min-h-0 relative">
+            <div id="map" className="min-h-[40vh] sm:min-h-[45vh] md:min-h-[50vh] lg:min-h-[60vh] rounded-lg">
+              {/* 구글맵이 여기에 로드 */}
             </div>
+            
+            {/* 호버 시 나타나는 국가 이미지 카드 */}
+            {hoveredCountry && (
+              <div 
+                className="fixed z-50 pointer-events-none transform -translate-x-1/2 -translate-y-full"
+                style={{
+                  left: mousePosition.x,
+                  top: mousePosition.y - 20,
+                }}
+              >
+                <div className="bg-white rounded-lg shadow-2xl p-4 max-w-xs country-card">
+                  <div className="relative w-full h-32 mb-3 rounded-lg overflow-hidden">
+                    <img 
+                      src={hoveredCountry.image} 
+                      alt={hoveredCountry.name}
+                      className="w-full h-full object-cover"
+                      onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                        // 이미지 로드 실패 시 기본 이미지 표시 (타입 수정)
+                        const target = e.target as HTMLImageElement;
+                        target.src = '/images/countries/default.jpg';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                  </div>
+                  <h3 className="text-center font-bold text-lg text-gray-800 mb-1">
+                    {hoveredCountry.name}
+                  </h3>
+                  <p className="text-center text-sm text-gray-600 leading-tight">
+                    {hoveredCountry.description}
+                  </p>
+                  <div className="mt-2 text-center">
+                    <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                      클릭해서 더 보기! 👆
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </main>
