@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>얼음 모양별 녹는 속도 비교</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-section {
+            display: flex;
+            justify-content: space-around;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+        
+        .ice-container {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px;
+            text-align: center;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .ice-shape {
+            width: 120px;
+            height: 120px;
+            margin: 20px auto;
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .cube-ice {
+            background: linear-gradient(135deg, #81d4fa 0%, #4fc3f7 50%, #29b6f6 100%);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(79, 195, 247, 0.5);
+        }
+        
+        .round-ice {
+            background: linear-gradient(135deg, #81d4fa 0%, #4fc3f7 50%, #29b6f6 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(79, 195, 247, 0.5);
+        }
+        
+        .melting-effect {
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 15px;
+            background: rgba(79, 195, 247, 0.3);
+            border-radius: 50%;
+            animation: melt 2s ease-in-out infinite;
+        }
+        
+        .surface-area-demo {
+            margin: 40px 0;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 3px dashed #ffa726;
+        }
+        
+        .surface-lines {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        
+        .surface-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .surface-visual {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 15px;
+            position: relative;
+            border: 3px solid #ff6b6b;
+            border-radius: 10px;
+        }
+        
+        .surface-visual.round {
+            border-radius: 50%;
+        }
+        
+        .heat-arrows {
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            right: -15px;
+            bottom: -15px;
+        }
+        
+        .arrow {
+            position: absolute;
+            width: 30px;
+            height: 3px;
+            background: #ff6b6b;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        .arrow::after {
+            content: '';
+            position: absolute;
+            right: -8px;
+            top: -3px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #ff6b6b;
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+        }
+        
+        .arrow-top { top: -15px; left: 50%; transform: translateX(-50%); }
+        .arrow-bottom { bottom: -15px; left: 50%; transform: translateX(-50%) rotate(180deg); }
+        .arrow-left { left: -15px; top: 50%; transform: translateY(-50%) rotate(90deg); }
+        .arrow-right { right: -15px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+        
+        .corner-arrows {
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            right: -20px;
+            bottom: -20px;
+        }
+        
+        .corner-arrow {
+            position: absolute;
+            width: 25px;
+            height: 2px;
+            background: #ff4757;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        .corner-arrow::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: -2px;
+            width: 0;
+            height: 0;
+            border-left: 6px solid #ff4757;
+            border-top: 3px solid transparent;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .corner-tl { top: -10px; left: -10px; transform: rotate(45deg); }
+        .corner-tr { top: -10px; right: -10px; transform: rotate(-45deg); }
+        .corner-bl { bottom: -10px; left: -10px; transform: rotate(135deg); }
+        .corner-br { bottom: -10px; right: -10px; transform: rotate(-135deg); }
+        
+        .speed-indicator {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #e74c3c;
+            margin: 15px 0;
+            animation: blink 1s ease-in-out infinite;
+        }
+        
+        .explanation {
+            background: #fff3cd;
+            border: 2px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        
+        .fun-fact {
+            background: linear-gradient(135deg, #a8e6cf 0%, #88d8a3 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2d3436;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes melt {
+            0% { width: 80px; opacity: 0.3; }
+            50% { width: 120px; opacity: 0.6; }
+            100% { width: 80px; opacity: 0.3; }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @media (max-width: 768px) {
+            .comparison-section {
+                flex-direction: column;
+            }
+            
+            .surface-lines {
+                flex-direction: column;
+            }
+            
+            .surface-item {
+                margin: 20px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧊 얼음 모양별 녹는 속도 비교 ❄️</h1>
+        
+        <div class="comparison-section">
+            <div class="ice-container">
+                <h2>네모난 얼음 (각얼음)</h2>
+                <div class="ice-shape cube-ice">
+                    <div class="melting-effect"></div>
+                </div>
+                <div class="speed-indicator">🔥 빨리 녹음!</div>
+                <p><strong>특징:</strong><br>
+                모서리 12개 + 꼭짓점 8개<br>
+                열을 받는 부분이 많아요!</p>
+            </div>
+            
+            <div class="ice-container">
+                <h2>동그란 얼음 (구형 얼음)</h2>
+                <div class="ice-shape round-ice">
+                    <div class="melting-effect"></div>
+                </div>
+                <div class="speed-indicator" style="color: #3498db;">❄️ 천천히 녹음</div>
+                <p><strong>특징:</strong><br>
+                매끄러운 표면<br>
+                같은 부피 대비 표면적이 가장 작아요!</p>
+            </div>
+        </div>
+        
+        <div class="surface-area-demo">
+            <h2 style="text-align: center; color: #e67e22;">🔥 열이 얼음을 공격하는 방법!</h2>
+            <div class="surface-lines">
+                <div class="surface-item">
+                    <div class="surface-visual">
+                        <div class="heat-arrows">
+                            <div class="arrow arrow-top"></div>
+                            <div class="arrow arrow-bottom"></div>
+                            <div class="arrow arrow-left"></div>
+                            <div class="arrow arrow-right"></div>
+                        </div>
+                        <div class="corner-arrows">
+                            <div class="corner-arrow corner-tl"></div>
+                            <div class="corner-arrow corner-tr"></div>
+                            <div class="corner-arrow corner-bl"></div>
+                            <div class="corner-arrow corner-br"></div>
+                        </div>
+                    </div>
+                    <h3>네모난 얼음</h3>
+                    <p>모서리와 꼭짓점으로<br>열이 많이 들어옴! 😰</p>
+                </div>
+                
+                <div class="surface-item">
+                    <div class="surface-visual round">
+                        <div class="heat-arrows">
+                            <div class="arrow arrow-top"></div>
+                            <div class="arrow arrow-bottom"></div>
+                            <div class="arrow arrow-left"></div>
+                            <div class="arrow arrow-right"></div>
+                        </div>
+                    </div>
+                    <h3>동그란 얼음</h3>
+                    <p>둥글둥글해서<br>열이 고르게 분산됨! 😎</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="explanation">
+            <h3>🤓 과학적 원리</h3>
+            <p><strong>표면적 vs 부피 비율</strong>이 핵심이에요!</p>
+            <ul>
+                <li><strong>네모난 얼음:</strong> 모서리와 꼭짓점 때문에 표면적이 넓어서 열 전달이 빨라요</li>
+                <li><strong>동그란 얼음:</strong> 구 모양은 같은 부피 대비 표면적이 가장 작아서 천천히 녹아요</li>
+            </ul>
+            <p>그래서 고급 바에서는 위스키나 칵테일에 둥근 얼음을 넣어서 술이 묽어지는 걸 방지한답니다! 🥃</p>
+        </div>
+        
+        <div class="fun-fact">
+            💡 <strong>꿀팁!</strong> 집에서 실험해보고 싶으면 같은 크기로 만들어서 컵에 넣고 관찰해봐요!<br>
+            네모난 게 확실히 더 빨리 작아지는 걸 볼 수 있을 거예요~ ㅎㅎ
+        </div>
+    </div>
+</body>
+</html>
