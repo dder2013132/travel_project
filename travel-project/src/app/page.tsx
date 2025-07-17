@@ -2,11 +2,12 @@
 import Image from "next/image";
 import Header from "./main_components/Header";
 import Footer from "./main_components/Footer";
-import CusNav from "@/components/common/Navigation"
-import { TravelCard } from "@/components/travel/TravelCards"
+import CusNav from "@/components/common/Navigation";
+import { TravelCard } from "@/components/travel/TravelCards";
 import "./globals.css";
 import { useEffect, useState } from "react";
 import { countryImages } from "./countryData";
+import router from "next/router";
 
 // 타입 정의 추가
 interface CountryData {
@@ -26,32 +27,37 @@ declare global {
 
 export default function Home() {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-  
+
   // 새로운 상태들 추가! (타입 지정)
-  const [hoveredCountry, setHoveredCountry] = useState<CountryData | null>(null);
-  const [mousePosition, setMousePosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [hoveredCountry, setHoveredCountry] = useState<CountryData | null>(
+    null
+  );
+  const [mousePosition, setMousePosition] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  });
   const [map, setMap] = useState<any>(null);
-  
+
   // 마우스 위치 트래킹 (타입 지정)
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
-    
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
-  
+
   // 국가 이미지 보여주기 (타입 지정)
   const showCountryImage = (countryData: CountryData) => {
     setHoveredCountry(countryData);
   };
-  
+
   // 국가 이미지 숨기기
   const hideCountryImage = () => {
     setHoveredCountry(null);
   };
-  
+
   // 구글맵 초기화 함수
   useEffect(() => {
     const initMap = () => {
@@ -68,6 +74,8 @@ export default function Home() {
           streetViewControl: false,
           rotateControl: false,
           fullscreenControl: false,
+          scrollwheel: true,
+          gestureHandling: "greedy",
           styles: [
             {
               featureType: "road",
@@ -86,38 +94,48 @@ export default function Home() {
       setMap(mapInstance);
 
       // 각 국가에 마커 추가하기
-      Object.entries(countryImages).forEach(([code, country]: [string, CountryData]) => {
-        const marker = new (window as any).google.maps.Marker({
-          position: country.position,
-          map: mapInstance,
-          title: country.name,
-          icon: {
-            url: 'data:image/svg+xml;base64,' + btoa(`
+      Object.entries(countryImages).forEach(
+        ([code, country]: [string, CountryData]) => {
+          const marker = new (window as any).google.maps.Marker({
+            position: country.position,
+            map: mapInstance,
+            title: country.name,
+            icon: {
+              url:
+                "data:image/svg+xml;base64," +
+                btoa(`
               <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30">
                 <circle cx="15" cy="15" r="12" fill="rgba(59, 130, 246, 0.8)" stroke="white" stroke-width="3"/>
                 <circle cx="15" cy="15" r="6" fill="white"/>
               </svg>
             `),
-            scaledSize: new (window as any).google.maps.Size(30, 30)
-          }
-        });
+              scaledSize: new (window as any).google.maps.Size(30, 30),
+            },
+          });
 
-        // 호버 이벤트 리스너들
-        marker.addListener('mouseover', () => {
-          console.log(`${country.name} 호버됨!`); // 디버깅용
-          showCountryImage(country);
-        });
+          // 호버 이벤트 리스너들
+          marker.addListener("mouseover", () => {
+            console.log(`${country.name} 호버됨!`); // 디버깅용
+            showCountryImage(country);
+          });
 
-        marker.addListener('mouseout', () => {
-          console.log(`${country.name} 호버 끝!`); // 디버깅용
-          hideCountryImage();
-        });
-        
-        // 클릭 이벤트
-        marker.addListener('click', () => {
-          alert(`${country.name} 여행 정보를 준비중입니다! ✈️`);
-        });
-      });
+          marker.addListener("mouseout", () => {
+            console.log(`${country.name} 호버 끝!`); // 디버깅용
+            hideCountryImage();
+          });
+
+          // 클릭 이벤트
+          marker.addListener("click", () => {
+            const countrySlug = country.name
+              .replace(/\s+/g, "-") // 공백을 하이픈으로
+              .replace(/[()]/g, "") // 괄호 제거
+              .toLowerCase(); // 소문자로
+
+            console.log(`${country.name} 클릭! → /destinations/${countrySlug}`);
+            router.push(`/destinations/${countrySlug}`);
+          });
+        }
+      );
 
       console.log("지도 로드됨:", mapInstance);
       console.log("마커 개수:", Object.keys(countryImages).length);
@@ -140,14 +158,16 @@ export default function Home() {
   return (
     <div className="h-auto bg-my-color w-full flex flex-col">
       {/* 헤더 */}
-        <CusNav />
+      <CusNav />
 
       {/* 메인 콘텐츠 영역 */}
       <main className="flex-1 flex flex-col bg-my-color items-center px-20 sm:px-20 min-h-screen">
         <div className="flex flex-col w-full max-w-none gap-8 mb-16 flex-1">
           {/* 항공권 - 적당 */}
           <div className="bg-ticket-color rounded-lg p-6 flex flex-col flex-shrink-0">
-            <h2 className="text-xl text-white font-bold mb-4">✈️ 항공권 검색</h2>
+            <h2 className="text-xl text-white font-bold mb-4">
+              ✈️ 항공권 검색
+            </h2>
             <div className="space-y-4">
               <div className="flex gap-4">
                 <input
@@ -162,8 +182,14 @@ export default function Home() {
                 />
               </div>
               <div className="flex gap-4">
-                <input type="date" className="flex-1 p-2 border rounded bg-white" />
-                <input type="date" className="flex-1 p-2 border rounded bg-white" />
+                <input
+                  type="date"
+                  className="flex-1 p-2 border rounded bg-white"
+                />
+                <input
+                  type="date"
+                  className="flex-1 p-2 border rounded bg-white"
+                />
               </div>
               <button className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600">
                 항공권 검색
@@ -173,13 +199,16 @@ export default function Home() {
 
           {/* 지도 - 개크게 */}
           <div className="flex-1 min-h-0 relative">
-            <div id="map" className="min-h-[40vh] sm:min-h-[45vh] md:min-h-[50vh] lg:min-h-[60vh] rounded-lg">
+            <div
+              id="map"
+              className="min-h-[40vh] sm:min-h-[45vh] md:min-h-[50vh] lg:min-h-[60vh] rounded-lg"
+            >
               {/* 구글맵이 여기에 로드 */}
             </div>
-            
+
             {/* 호버 시 나타나는 국가 이미지 카드 */}
             {hoveredCountry && (
-              <div 
+              <div
                 className="fixed z-50 pointer-events-none transform -translate-x-1/2 -translate-y-full"
                 style={{
                   left: mousePosition.x,
@@ -188,14 +217,14 @@ export default function Home() {
               >
                 <div className="bg-white rounded-lg shadow-2xl p-4 max-w-xs country-card">
                   <div className="relative w-full h-32 mb-3 rounded-lg overflow-hidden">
-                    <img 
-                      src={hoveredCountry.image} 
+                    <img
+                      src={hoveredCountry.image}
                       alt={hoveredCountry.name}
                       className="w-full h-full object-cover"
                       onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                         // 이미지 로드 실패 시 기본 이미지 표시 (타입 수정)
                         const target = e.target as HTMLImageElement;
-                        target.src = '/images/countries/default.jpg';
+                        target.src = "/images/countries/default.jpg";
                       }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
@@ -219,7 +248,9 @@ export default function Home() {
       </main>
       {/* 여행지 카드 컴포넌트 */}
       <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">🌍 인기 여행지</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          🌍 인기 여행지
+        </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {Object.values(countryImages).map((destination, index) => {
             // TravelDestination 타입으로 변환
