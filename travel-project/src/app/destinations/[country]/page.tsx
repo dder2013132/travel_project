@@ -1,5 +1,6 @@
-import { useRouter } from "next/router";
-import { countryImages } from "../countryData";
+"use client";
+import { useParams, useRouter } from "next/navigation"; // ✅ 변경!
+import { countryImages } from "../../countryData"; // 경로 수정
 import { useEffect, useState } from "react";
 
 interface CountryData {
@@ -11,16 +12,16 @@ interface CountryData {
 
 const CountryDestination = () => {
   const router = useRouter();
-  const { country } = router.query;
+  const params = useParams(); // ✅ useParams 사용!
+  const country = params.country; // ✅ 이렇게 가져오기
+  
   const [countryData, setCountryData] = useState<CountryData | null>(null);
 
   useEffect(() => {
     if (country) {
       // URL의 국가명을 실제 데이터와 매칭
       const foundCountry = Object.values(countryImages).find(
-        (data) =>
-          data.name.replace(/\s+/g, "-").replace(/[()]/g, "").toLowerCase() ===
-          country
+        (data) => data.slug === country
       );
 
       setCountryData(foundCountry || null);

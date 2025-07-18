@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 // import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
-import "../globals.css";
+import "../../globals.css";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -14,14 +14,14 @@ import "../globals.css";
 // });
 
 const jalnan2ttf = localFont({
-  src: "../../fonts/Jalnan2TTF.ttf",
+  src: "../../../fonts/Jalnan2TTF.ttf",
   display: "swap",
   weight: "45 920",
   variable: "--font-jalnan2ttf"
 });
 
 const jalnan2 = localFont({
-  src: "../../fonts/Jalnan2.otf",
+  src: "../../../fonts/Jalnan2.otf",
   display: "swap",
   variable: "--font-jalnan2"
 })

@@ -7,11 +7,12 @@ import { TravelCard } from "@/components/travel/TravelCards";
 import "./globals.css";
 import { useEffect, useState } from "react";
 import { countryImages } from "./countryData";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 
 // 타입 정의 추가
 interface CountryData {
   name: string;
+  slug: string;
   image: string;
   position: { lat: number; lng: number };
   description: string;
@@ -27,7 +28,7 @@ declare global {
 
 export default function Home() {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-
+  const router = useRouter();
   // 새로운 상태들 추가! (타입 지정)
   const [hoveredCountry, setHoveredCountry] = useState<CountryData | null>(
     null
@@ -126,13 +127,10 @@ export default function Home() {
 
           // 클릭 이벤트
           marker.addListener("click", () => {
-            const countrySlug = country.name
-              .replace(/\s+/g, "-") // 공백을 하이픈으로
-              .replace(/[()]/g, "") // 괄호 제거
-              .toLowerCase(); // 소문자로
-
-            console.log(`${country.name} 클릭! → /destinations/${countrySlug}`);
-            router.push(`/destinations/${countrySlug}`);
+            console.log(
+              `${country.name} 클릭! → /destinations/${country.slug}`
+            );
+            router.push(`/destinations/${country.slug}`);
           });
         }
       );
